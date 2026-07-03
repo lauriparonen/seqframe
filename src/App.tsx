@@ -13,10 +13,16 @@ import {
   horizontalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { SortableThumb } from "./components/SortableThumb";
+import { ThumbMenu } from "./components/ThumbMenu";
 import { PRESETS } from "./presets";
 import { clampCrop, drawFrame, frameDuration, frameLayout } from "./render";
 import { exportGif } from "./export/gif";
 import { exportMp4, mp4Supported } from "./export/mp4";
+import {
+  bakeTransform,
+  revokeUrlIfUnused,
+  type ImageTransform,
+} from "./imageOps";
 import type { Frame, FitMode, RenderSettings } from "./types";
 import "./App.css";
 
@@ -106,6 +112,11 @@ export default function App() {
   );
   const [error, setError] = useState<string | null>(null);
   const [accent, setAccent] = useState(FALLBACK_ACCENT);
+  const [thumbMenu, setThumbMenu] = useState<{
+    id: string;
+    x: number;
+    y: number;
+  } | null>(null);
 
   const [area, setArea] = useState({ w: 0, h: 0 });
 
@@ -187,6 +198,25 @@ export default function App() {
     [addFiles],
   );
 
+  useEffect(() => {
+    const onPaste = (e: ClipboardEvent) => {
+      const t = e.target as HTMLElement | null;
+      if (t?.closest("input, textarea, select")) return;
+      const items = e.clipboardData?.items;
+      if (!items) return;
+      for (const item of Array.from(items)) {
+        if (!item.type.startsWith("image/")) continue;
+        const file = item.getAsFile();
+        if (!file) continue;
+        e.preventDefault();
+        addFiles([file]);
+        return;
+      }
+    };
+    window.addEventListener("paste", onPaste);
+    return () => window.removeEventListener("paste", onPaste);
+  }, [addFiles]);
+
   // ---- reorder / remove ---------------------------------------------------
   const onDragEnd = (e: DragEndEvent) => {
     const { active, over } = e;
@@ -201,10 +231,58 @@ export default function App() {
   const removeFrame = (id: string) => {
     setFrames((prev) => {
       const f = prev.find((x) => x.id === id);
-      if (f) URL.revokeObjectURL(f.url);
-      return prev.filter((x) => x.id !== id);
+      const next = prev.filter((x) => x.id !== id);
+      if (f) revokeUrlIfUnused(f.url, next);
+      return next;
     });
     setSelectedId((cur) => (cur === id ? null : cur));
+  };
+
+  const duplicateFrame = (id: string) => {
+    const copyId = uid();
+    setFrames((prev) => {
+      const idx = prev.findIndex((f) => f.id === id);
+      if (idx < 0) return prev;
+      const src = prev[idx];
+      const copy: Frame = {
+        id: copyId,
+        name: src.name,
+        url: src.url,
+        img: src.img,
+        duration: src.duration,
+        offset: src.offset ? { ...src.offset } : undefined,
+        zoom: src.zoom,
+      };
+      const next = [...prev];
+      next.splice(idx + 1, 0, copy);
+      return next;
+    });
+    setSelectedId(copyId);
+  };
+
+  const transformFrame = async (id: string, op: ImageTransform) => {
+    const frame = frames.find((f) => f.id === id);
+    if (!frame) return;
+    try {
+      const { url, img } = await bakeTransform(frame, op);
+      setFrames((prev) => {
+        revokeUrlIfUnused(frame.url, prev.filter((f) => f.id !== id));
+        return prev.map((f) => {
+          if (f.id !== id) return f;
+          const merged = {
+            ...f,
+            url,
+            img,
+            offset: undefined,
+            zoom: undefined,
+          };
+          const { offset, zoom } = clampCrop(merged, settings);
+          return { ...merged, offset, zoom };
+        });
+      });
+    } catch {
+      setError("Could not transform image");
+    }
   };
 
   const patchFrame = (id: string, patch: Partial<Frame>) =>
@@ -385,7 +463,7 @@ export default function App() {
             >
               <div>
                 <strong>Drop images here</strong>
-                <span>or click to choose files</span>
+                <span>click to choose · paste from clipboard</span>
               </div>
             </button>
           ) : (
@@ -431,7 +509,7 @@ export default function App() {
         </div>
         {frames.length > 0 && (
           <p className={`stage-hint${playing ? " stage-hint--hidden" : ""}`}>
-            drag to reposition · scroll to zoom · double-click to reset
+            drag · scroll · double-click reset · paste
           </p>
         )}
       </main>
@@ -484,6 +562,10 @@ export default function App() {
                   selected={f.id === editing?.id}
                   onSelect={() => setSelectedId(f.id)}
                   onRemove={() => removeFrame(f.id)}
+                  onContextMenu={(e) => {
+                    setSelectedId(f.id);
+                    setThumbMenu({ id: f.id, x: e.clientX, y: e.clientY });
+                  }}
                 />
               ))}
               <button
@@ -661,6 +743,18 @@ export default function App() {
           e.target.value = "";
         }}
       />
+
+      {thumbMenu && (
+        <ThumbMenu
+          x={thumbMenu.x}
+          y={thumbMenu.y}
+          onDuplicate={() => duplicateFrame(thumbMenu.id)}
+          onFlipH={() => transformFrame(thumbMenu.id, "flipH")}
+          onFlipV={() => transformFrame(thumbMenu.id, "flipV")}
+          onRotate={() => transformFrame(thumbMenu.id, "rotate")}
+          onClose={() => setThumbMenu(null)}
+        />
+      )}
     </div>
   );
 }

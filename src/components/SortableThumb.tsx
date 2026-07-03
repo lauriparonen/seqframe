@@ -8,6 +8,7 @@ interface Props {
   selected: boolean;
   onSelect: () => void;
   onRemove: () => void;
+  onContextMenu: (e: React.MouseEvent) => void;
 }
 
 export function SortableThumb({
@@ -16,6 +17,7 @@ export function SortableThumb({
   selected,
   onSelect,
   onRemove,
+  onContextMenu,
 }: Props) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
     useSortable({ id: frame.id });
@@ -39,6 +41,10 @@ export function SortableThumb({
           e.preventDefault();
           onSelect();
         }
+      }}
+      onContextMenu={(e) => {
+        e.preventDefault();
+        onContextMenu(e);
       }}
       {...attributes}
       {...listeners}

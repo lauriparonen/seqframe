@@ -400,6 +400,31 @@ button:disabled {
   border-color: var(--ink);
 }
 
+.thumb-menu {
+  position: fixed;
+  z-index: 100;
+  min-width: 140px;
+  padding: 4px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+}
+.thumb-menu button {
+  display: block;
+  width: 100%;
+  border: 0;
+  background: transparent;
+  padding: 6px 10px;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  text-align: left;
+  color: var(--muted);
+}
+.thumb-menu button:hover {
+  background: var(--ink);
+  color: var(--bg);
+}
+
 /* ---- sidebar ---- */
 .sidebar {
   grid-area: sidebar;
