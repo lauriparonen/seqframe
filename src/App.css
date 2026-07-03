@@ -561,3 +561,170 @@ input[type="range"]::-moz-range-track {
   height: 1px;
   background: var(--line);
 }
+
+@media (max-width: 900px) {
+  .app {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto minmax(340px, 58svh) auto auto;
+    grid-template-areas:
+      "topbar"
+      "stage"
+      "timeline"
+      "sidebar";
+    height: auto;
+    min-height: 100svh;
+    overflow-x: hidden;
+  }
+
+  .topbar {
+    flex-wrap: wrap;
+  }
+
+  .preset-select {
+    margin-left: auto;
+  }
+
+  .sidebar {
+    overflow: visible;
+  }
+
+  .sidebar h3:first-child {
+    margin-top: 0;
+  }
+
+  .timeline__controls {
+    flex-wrap: wrap;
+  }
+
+  .timeline__controls .field {
+    flex: 1 1 220px;
+    margin-bottom: 0;
+  }
+
+  .timeline__controls .field.small {
+    flex: 0 0 auto;
+  }
+}
+
+@media (max-width: 640px) {
+  body {
+    font-size: 13px;
+  }
+
+  .app {
+    grid-template-rows: auto minmax(300px, 52svh) auto auto;
+    padding: 6px;
+  }
+
+  .topbar {
+    gap: 8px;
+    padding: 10px;
+  }
+
+  .brand {
+    flex: 1 1 100%;
+  }
+
+  .preset-select {
+    flex: 1 1 100%;
+    margin-left: 0;
+    padding-left: 0;
+    border-left: 0;
+  }
+
+  .preset-select select,
+  .export-btn {
+    min-height: 42px;
+  }
+
+  .preset-select select {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .export-btn {
+    flex: 1 1 100%;
+  }
+
+  .topbar .spacer {
+    display: none;
+  }
+
+  .stage {
+    padding: 12px 10px 10px;
+  }
+
+  .dropzone {
+    width: 100%;
+    height: auto;
+    min-height: 230px;
+  }
+
+  .stage-hint {
+    font-size: 9px;
+    text-align: center;
+  }
+
+  .timeline,
+  .sidebar {
+    padding-inline: 10px;
+  }
+
+  .timeline__controls {
+    gap: 10px;
+  }
+
+  .play {
+    width: 42px;
+    height: 42px;
+  }
+
+  .timeline__controls .spacer {
+    display: none;
+  }
+
+  .timeline__controls .field,
+  .timeline__controls .field.small {
+    flex: 1 1 100%;
+  }
+
+  .count {
+    width: 100%;
+  }
+
+  .thumbs {
+    gap: 8px;
+    padding-bottom: 10px;
+  }
+
+  .thumb,
+  .add-thumb {
+    width: 72px;
+    height: 72px;
+  }
+
+  .thumb__remove {
+    width: 24px;
+    height: 24px;
+    opacity: 1;
+  }
+
+  .sidebar h3 {
+    margin-inline: -10px;
+    padding-inline: 10px;
+  }
+
+  .dur-row {
+    gap: 8px;
+  }
+
+  .dur-row input[type="range"] {
+    min-width: 0;
+  }
+
+  .seg button,
+  .btn-ghost,
+  .thumb-menu button {
+    min-height: 40px;
+  }
+}
