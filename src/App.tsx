@@ -425,7 +425,7 @@ export default function App() {
       onDrop={onDrop}
     >
       <header className="topbar">
-        <div className="brand">▚ seqframe</div>
+        <div className="brand">▞ seqframe</div>
         <label className="preset-select">
           <span>Preset</span>
           <select
