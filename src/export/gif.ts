@@ -106,5 +106,6 @@ export async function exportGif(
   }
 
   gif.finish();
-  return new Blob([gif.bytesView()], { type: "image/gif" });
+  // Copy into a fresh ArrayBuffer-backed view so it satisfies BlobPart.
+  return new Blob([new Uint8Array(gif.bytesView())], { type: "image/gif" });
 }

@@ -33,8 +33,6 @@ export function SortableThumb({
       ref={setNodeRef}
       style={style}
       className={`thumb ${selected ? "thumb--selected" : ""}`}
-      role="button"
-      tabIndex={0}
       onClick={onSelect}
       onKeyDown={(e) => {
         if (e.key === "Enter" || e.key === " ") {
