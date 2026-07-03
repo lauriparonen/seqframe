@@ -231,6 +231,9 @@ button:disabled {
   text-transform: uppercase;
   color: var(--muted);
 }
+.stage-hint--hidden {
+  visibility: hidden;
+}
 .dropzone {
   height: min(60vh, 520px);
   max-width: 100%;

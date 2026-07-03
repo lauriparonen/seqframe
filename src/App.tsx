@@ -429,8 +429,10 @@ export default function App() {
             )
           )}
         </div>
-        {frames.length > 0 && !playing && (
-          <p className="stage-hint">drag to reposition · scroll to zoom · double-click to reset</p>
+        {frames.length > 0 && (
+          <p className={`stage-hint${playing ? " stage-hint--hidden" : ""}`}>
+            drag to reposition · scroll to zoom · double-click to reset
+          </p>
         )}
       </main>
 
