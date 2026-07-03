@@ -14,7 +14,7 @@ import {
 } from "@dnd-kit/sortable";
 import { SortableThumb } from "./components/SortableThumb";
 import { PRESETS } from "./presets";
-import { drawFrame, frameDuration, frameLayout } from "./render";
+import { clampCrop, drawFrame, frameDuration, frameLayout } from "./render";
 import { exportGif } from "./export/gif";
 import { exportMp4, mp4Supported } from "./export/mp4";
 import type { Frame, FitMode, RenderSettings } from "./types";
@@ -209,7 +209,12 @@ export default function App() {
 
   const patchFrame = (id: string, patch: Partial<Frame>) =>
     setFrames((prev) =>
-      prev.map((f) => (f.id === id ? { ...f, ...patch } : f)),
+      prev.map((f) => {
+        if (f.id !== id) return f;
+        const merged = { ...f, ...patch };
+        const { offset, zoom } = clampCrop(merged, settings);
+        return { ...merged, offset, zoom };
+      }),
     );
 
   // ---- crop: drag to pan, wheel / slider to zoom -------------------------
@@ -235,12 +240,28 @@ export default function App() {
   };
   const onWheelZoom = (e: React.WheelEvent) => {
     if (!editing || playing) return;
-    const z = clamp((editing.zoom ?? 1) * (1 - e.deltaY * 0.0015), 0.2, 6);
+    e.preventDefault();
+    const lo = fit === "cover" ? 1 : 0.2;
+    const z = clamp((editing.zoom ?? 1) * (1 - e.deltaY * 0.0015), lo, 6);
     patchFrame(editing.id, { zoom: z });
   };
   const resetCrop = () => {
     if (editing) patchFrame(editing.id, { offset: undefined, zoom: undefined });
   };
+
+  // Re-clamp all frames when canvas settings change (padding, fit, preset).
+  useEffect(() => {
+    setFrames((prev) =>
+      prev.map((f) => {
+        const { offset, zoom } = clampCrop(f, settings);
+        const ox = f.offset?.x ?? 0;
+        const oy = f.offset?.y ?? 0;
+        const oz = f.zoom ?? 1;
+        if (ox === offset.x && oy === offset.y && oz === zoom) return f;
+        return { ...f, offset, zoom };
+      }),
+    );
+  }, [settings]);
 
   // ---- preview rendering --------------------------------------------------
   useEffect(() => {
@@ -531,7 +552,7 @@ export default function App() {
               <div className="dur-row">
                 <input
                   type="range"
-                  min={0.2}
+                  min={fit === "cover" ? 1 : 0.2}
                   max={6}
                   step={0.01}
                   value={editing.zoom ?? 1}

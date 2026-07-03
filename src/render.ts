@@ -1,4 +1,7 @@
-import type { Frame, RenderSettings } from "./types";
+import type { Frame, RenderSettings, Vec2 } from "./types";
+
+const clamp = (v: number, lo: number, hi: number) =>
+  Math.min(hi, Math.max(lo, v));
 
 export interface FrameLayout {
   /** Padded content box (the crop window) in canvas pixels. */
@@ -39,6 +42,47 @@ export function frameLayout(frame: Frame, settings: RenderSettings): FrameLayout
   const cy = h / 2 + (frame.offset?.y ?? 0);
 
   return { pad, boxW, boxH, dw, dh, dx: cx - dw / 2, dy: cy - dh / 2 };
+}
+
+/**
+ * Keep pan/zoom inside the content box so the image always fills the crop
+ * window — no background bleeds into the frame when repositioning.
+ */
+export function clampCrop(
+  frame: Frame,
+  settings: RenderSettings,
+): { offset: Vec2; zoom: number } {
+  const { w, h } = settings.preset;
+  let zoom = frame.zoom ?? 1;
+  if (settings.fit === "cover") {
+    zoom = clamp(zoom, 1, 6);
+  } else {
+    zoom = clamp(zoom, 0.2, 6);
+  }
+
+  const atZoom = { ...frame, zoom };
+  const { pad, boxW, boxH, dw, dh } = frameLayout(atZoom, settings);
+
+  let ox = frame.offset?.x ?? 0;
+  let oy = frame.offset?.y ?? 0;
+
+  if (dw >= boxW) {
+    const minX = pad + boxW - dw / 2 - w / 2;
+    const maxX = pad + dw / 2 - w / 2;
+    ox = clamp(ox, Math.min(minX, maxX), Math.max(minX, maxX));
+  } else {
+    ox = 0;
+  }
+
+  if (dh >= boxH) {
+    const minY = pad + boxH - dh / 2 - h / 2;
+    const maxY = pad + dh / 2 - h / 2;
+    oy = clamp(oy, Math.min(minY, maxY), Math.max(minY, maxY));
+  } else {
+    oy = 0;
+  }
+
+  return { offset: { x: ox, y: oy }, zoom };
 }
 
 /** Draw a single frame into a canvas context at the target (preset) size. */
