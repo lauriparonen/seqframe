@@ -6,13 +6,7 @@ Essentially a more austere version of [sequence.video](https://sequence.video): 
 
 ![Seqframe editor](public/demos/demo.webp)
 
-## Demos
-
-Examples exported with seqframe:
-
-| Cyanotypes | Velvet gradients |
-| --- | --- |
-| ![Cyanotypes](public/demos/cyanotypes.gif) | ![Velvet gradients](public/demos/velvet-gradients.gif) |
+![Velvet gradients](public/demos/velvet-gradients.gif) 
 
 ## Features
 
