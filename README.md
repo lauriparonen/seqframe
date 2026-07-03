@@ -4,6 +4,16 @@ A minimal browser-based editor for turning image sequences into GIF or MP4 anima
 
 Essentially a more austere version of [sequence.video](https://sequence.video): no transitions and GIFs have only one frame per image to limit file size.
 
+![Seqframe editor](public/demos/demo.webp)
+
+## Demos
+
+Examples exported with seqframe:
+
+| Cyanotypes | Velvet gradients |
+| --- | --- |
+| ![Cyanotypes](public/demos/cyanotypes.gif) | ![Velvet gradients](public/demos/velvet-gradients.gif) |
+
 ## Features
 
 - **Image sequences** — Drop or pick multiple images, reorder them with drag-and-drop, and preview playback in the editor.
