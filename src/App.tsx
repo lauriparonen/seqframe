@@ -12,6 +12,7 @@ import {
   arrayMove,
   horizontalListSortingStrategy,
 } from "@dnd-kit/sortable";
+import { Colophon } from "./components/Colophon";
 import { SortableThumb } from "./components/SortableThumb";
 import { ThumbMenu } from "./components/ThumbMenu";
 import { PRESETS } from "./presets";
@@ -440,17 +441,7 @@ export default function App() {
           </select>
         </label>
         <div className="spacer" />
-        <button
-          className="export-btn"
-          onClick={doExport}
-          disabled={busy || frames.length === 0}
-        >
-          {busy
-            ? progress
-              ? `Exporting ${progress.done}/${progress.total}`
-              : "Exporting…"
-            : `Export ${format.toUpperCase()}`}
-        </button>
+        <Colophon variant="topbar" />
       </header>
 
       <main className="stage">
@@ -728,6 +719,20 @@ export default function App() {
             <p className="hint">H.264 MP4 via WebCodecs.</p>
           </div>
         )}
+
+        <button
+          className="export-btn export-btn--sidebar"
+          onClick={doExport}
+          disabled={busy || frames.length === 0}
+        >
+          {busy
+            ? progress
+              ? `Exporting ${progress.done}/${progress.total}`
+              : "Exporting…"
+            : `Export ${format.toUpperCase()}`}
+        </button>
+
+        <Colophon variant="sidebar" />
 
         {error && <p className="error">{error}</p>}
       </aside>

@@ -48,7 +48,8 @@ input[type="color"] {
 button:focus-visible,
 select:focus-visible,
 input:focus-visible,
-.thumb:focus-visible {
+.thumb:focus-visible,
+.colophon__link:focus-visible {
   outline: 1px solid var(--accent);
   outline-offset: 1px;
 }
@@ -131,12 +132,60 @@ button:disabled {
 .preset-select select option {
   background: var(--panel);
 }
+.colophon {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.colophon--sidebar {
+  display: none;
+}
+.colophon__sep {
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1;
+  user-select: none;
+}
+.colophon__link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--muted);
+  transition: color 0.15s;
+}
+.colophon__link:hover {
+  color: var(--ink);
+}
+.colophon__icon {
+  display: block;
+  width: 18px;
+  height: 18px;
+}
+.colophon__icon--laurel {
+  width: 20px;
+  height: 20px;
+  background-color: currentColor;
+  -webkit-mask: url(/enso-laurel-transparent.svg) center / contain no-repeat;
+  mask: url(/enso-laurel-transparent.svg) center / contain no-repeat;
+}
 .export-btn {
   padding: 8px 16px;
   font-weight: 600;
   font-size: 11px;
   letter-spacing: 0.1em;
   text-transform: uppercase;
+}
+.export-btn--sidebar {
+  display: block;
+  width: 100%;
+  margin-top: 6px;
+  border: 1px solid var(--accent);
+  color: var(--accent);
+}
+.export-btn--sidebar:hover:not(:disabled) {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-text);
 }
 .export-btn:disabled {
   opacity: 0.45;
@@ -253,13 +302,14 @@ button:disabled {
   margin-bottom: 4px;
   text-transform: uppercase;
 }
-.dropzone:hover {
-  background: var(--ink);
-  border-color: var(--ink);
-  color: var(--bg);
+.dropzone:hover:not(:disabled) {
+  background: var(--panel-2);
+  border: 1px dotted color-mix(in srgb, var(--ink) 32%, transparent);
+  color: var(--muted);
 }
-.dropzone:hover strong {
-  color: var(--bg);
+
+.dropzone:hover:not(:disabled) strong {
+  color: var(--ink);
 }
 
 /* ---- timeline ---- */
@@ -588,6 +638,18 @@ input[type="range"]::-moz-range-track {
     overflow: visible;
   }
 
+  .colophon--topbar {
+    display: none;
+  }
+
+  .colophon--sidebar {
+    display: flex;
+    justify-content: center;
+    margin-top: 18px;
+    padding-top: 14px;
+    border-top: 1px solid var(--line);
+  }
+
   .sidebar h3:first-child {
     margin-top: 0;
   }
@@ -632,18 +694,14 @@ input[type="range"]::-moz-range-track {
     border-left: 0;
   }
 
-  .preset-select select,
-  .export-btn {
-    min-height: 42px;
-  }
-
   .preset-select select {
+    min-height: 42px;
     flex: 1;
     min-width: 0;
   }
 
-  .export-btn {
-    flex: 1 1 100%;
+  .export-btn--sidebar {
+    min-height: 42px;
   }
 
   .topbar .spacer {
