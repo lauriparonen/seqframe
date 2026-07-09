@@ -29,5 +29,7 @@ export interface RenderSettings {
   background: string;
   /** Padding as a fraction (0–0.4) of the shorter canvas side. */
   padding: number;
+  /** Corner radius as a fraction (0–0.5) of the shorter canvas side. */
+  borderRadius: number;
   fit: FitMode;
 }

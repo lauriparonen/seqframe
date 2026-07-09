@@ -99,8 +99,17 @@ export function drawFrame(
 
   ctx.save();
   // Clip to the padded content box so the image never bleeds into the padding.
+  const radius = Math.min(
+    Math.min(w, h) * settings.borderRadius,
+    boxW / 2,
+    boxH / 2,
+  );
   ctx.beginPath();
-  ctx.rect(pad, pad, boxW, boxH);
+  if (radius > 0) {
+    ctx.roundRect(pad, pad, boxW, boxH, radius);
+  } else {
+    ctx.rect(pad, pad, boxW, boxH);
+  }
   ctx.clip();
 
   ctx.imageSmoothingEnabled = true;

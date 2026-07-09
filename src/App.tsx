@@ -98,6 +98,7 @@ export default function App() {
   const [presetIdx, setPresetIdx] = useState(0);
   const [background, setBackground] = useState("#000000");
   const [padding, setPadding] = useState(0); // fraction of shorter side
+  const [borderRadius, setBorderRadius] = useState(0); // fraction of shorter side
   const [fit, setFit] = useState<FitMode>("cover");
   const [duration, setDuration] = useState(0.5);
 
@@ -130,8 +131,8 @@ export default function App() {
 
   const preset = PRESETS[presetIdx];
   const settings: RenderSettings = useMemo(
-    () => ({ preset, background, padding, fit }),
-    [preset, background, padding, fit],
+    () => ({ preset, background, padding, borderRadius, fit }),
+    [preset, background, padding, borderRadius, fit],
   );
 
   const totalDuration = frames.reduce(
@@ -616,6 +617,20 @@ export default function App() {
               onChange={(e) => setPadding(Number(e.target.value))}
             />
             <span className="mono">{Math.round(padding * 100)}%</span>
+          </div>
+        </div>
+        <div className="field">
+          <label>Corner radius</label>
+          <div className="dur-row">
+            <input
+              type="range"
+              min={0}
+              max={0.5}
+              step={0.01}
+              value={borderRadius}
+              onChange={(e) => setBorderRadius(Number(e.target.value))}
+            />
+            <span className="mono">{Math.round(borderRadius * 100)}%</span>
           </div>
         </div>
 
