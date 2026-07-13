@@ -99,14 +99,22 @@ export function drawFrame(
 
   ctx.save();
   // Clip to the padded content box so the image never bleeds into the padding.
+  // In "contain" mode the image can be letterboxed (smaller than the content
+  // box on one axis), so round the image's own visible rect — not the whole
+  // box — otherwise the radius gets truncated by the letterbox edge and
+  // looks like a small stubby notch instead of a smooth curve.
+  const clipX = Math.max(pad, dx);
+  const clipY = Math.max(pad, dy);
+  const clipW = Math.min(pad + boxW, dx + dw) - clipX;
+  const clipH = Math.min(pad + boxH, dy + dh) - clipY;
   const radius = Math.min(
     Math.min(w, h) * settings.borderRadius,
-    boxW / 2,
-    boxH / 2,
+    clipW / 2,
+    clipH / 2,
   );
   ctx.beginPath();
-  if (radius > 0) {
-    ctx.roundRect(pad, pad, boxW, boxH, radius);
+  if (radius > 0 && clipW > 0 && clipH > 0) {
+    ctx.roundRect(clipX, clipY, clipW, clipH, radius);
   } else {
     ctx.rect(pad, pad, boxW, boxH);
   }
